@@ -2,13 +2,14 @@ package ru.ifmo.mpp.hashmap;
 
 /**
  * Int-to-Int hash map with open addressing and linear probes.
- * This class is <b>NOT</b> thread-safe.
  *
- * @author Roman Elizarov.
+ * TODO: This class is <b>NOT</b> thread-safe.
+ *
+ * @author <Фамилия>.
  */
 public class IntIntHashMap {
     private static final int MAGIC = 0x9E3779B9; // golden ratio
-    private static final int INITIAL_CAPACITY = 16;
+    private static final int INITIAL_CAPACITY = 2; // !!! DO NOT CHANGE INITIAL CAPACITY !!!
     private static final int MAX_PROBES = 8; // max number of probes to find an item
 
     private static final int NO_KEY = 0; // missing key
