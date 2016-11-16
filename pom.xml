@@ -26,7 +26,7 @@
     <dependency>
       <groupId>com.devexperts.lincheck</groupId>
       <artifactId>lincheck</artifactId>
-      <version>1.2</version>
+      <version>1.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
