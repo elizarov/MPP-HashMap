@@ -1,26 +1,48 @@
 package ru.ifmo.mpp.hashmap;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-/**
- * @author Roman Elizarov.
- */
 public class IntIntHashMapTest {
+
+    private static final int N = 1_000_000;
+    private static final int MAX_KEY = 100;
+    private static final int MAX_VALUE = 500;
+    private static final Random RAND = new Random(0);
+
     private IntIntHashMap map = new IntIntHashMap();
 
     @Test
-    public void testSimple() {
-        assertThat(map.get(1), is(0));
-        assertThat(map.put(1, 42), is(0));
-        assertThat(map.get(1), is(42));
-        assertThat(map.get(1), is(42));
-        assertThat(map.remove(1), is(42));
-        assertThat(map.get(1), is(0));
+    public void test() {
+        Map<Integer, Integer> expectedMap = new HashMap<>();
+        for (int i = 0; i < N; i++) {
+            int key = RAND.nextInt(MAX_KEY) + 1;
+            int val = RAND.nextInt(MAX_VALUE) + 1;
+            if (RAND.nextBoolean()) {
+                Integer expected = expectedMap.put(key, val);
+                if (expected == null)
+                    expected = 0;
+                assertEquals((int) expected, map.put(key, val));
+            } else {
+                Integer expected = expectedMap.remove(key);
+                if (expected == null)
+                    expected = 0;
+                assertEquals((int) expected, map.remove(key));
+            }
+            for (key = 1; key <= MAX_KEY; key++) {
+                Integer expected = expectedMap.get(key);
+                if (expected == null)
+                    expected = 0;
+                assertEquals((int) expected, map.get(key));
+            }
+        }
     }
 
     @Test

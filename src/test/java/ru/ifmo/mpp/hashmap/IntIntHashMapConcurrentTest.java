@@ -1,52 +1,44 @@
 package ru.ifmo.mpp.hashmap;
 
-import com.devexperts.dxlab.lincheck.Checker;
-import com.devexperts.dxlab.lincheck.annotations.CTest;
+import com.devexperts.dxlab.lincheck.LinChecker;
 import com.devexperts.dxlab.lincheck.annotations.Operation;
-import com.devexperts.dxlab.lincheck.annotations.ReadOnly;
-import com.devexperts.dxlab.lincheck.annotations.Reload;
-import com.devexperts.dxlab.lincheck.util.Result;
+import com.devexperts.dxlab.lincheck.annotations.Param;
+import com.devexperts.dxlab.lincheck.annotations.Reset;
+import com.devexperts.dxlab.lincheck.paramgen.IntGen;
+import com.devexperts.dxlab.lincheck.stress.StressCTest;
+import com.devexperts.dxlab.lincheck.verifier.LongExLinearizabilityVerifier;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
-/**
- * @author Nikita Koval.
- */
-@CTest(iter = 100, actorsPerThread = {"1:5", "1:5"})
-@CTest(iter = 100, actorsPerThread = {"1:5", "1:5", "1:5"})
-@CTest(iter = 100, actorsPerThread = {"1:3", "1:3", "1:3", "1:3"})
+@StressCTest
+@StressCTest(actorsPerThread = {"20:30", "20:30"}, verifier = LongExLinearizabilityVerifier.class)
+@Param(name = "key", gen = IntGen.class, conf = "1:6")
+@Param(name = "value", gen = IntGen.class, conf = "1:100")
 public class IntIntHashMapConcurrentTest {
 
     private IntIntHashMap map;
 
-    @Reload
+    @Reset
     public void reload() {
         map = new IntIntHashMap();
     }
 
-    @Operation(args = {"1:5", "1:10"})
-    public void put(Result res, Object[] args) throws Exception {
-        Integer key = (Integer) args[0];
-        Integer value = (Integer) args[1];
-        res.setValue(map.put(key, value));
+    @Operation(params = {"key", "value"})
+    public Integer put(Integer key, Integer value) {
+        return map.put(key, value);
     }
 
-    @Operation(args = {"1:5"})
-    public void remove(Result res, Object[] args) throws Exception {
-        Integer key = (Integer) args[0];
-        res.setValue(map.remove(key));
+    @Operation(params = "key")
+    public Integer remove(Integer key) {
+        return map.remove(key);
     }
 
-    @ReadOnly
-    @Operation(args = {"1:5"})
-    public void get(Result res, Object[] args) throws Exception {
-        Integer key = (Integer) args[0];
-        res.setValue(map.get(key));
+    @Operation(params = "key")
+    public Integer get(Integer key) {
+        return map.get(key);
     }
 
     @Test
     public void test() throws Exception {
-        assertTrue(Checker.check(new IntIntHashMapConcurrentTest()));
+        LinChecker.check(IntIntHashMapConcurrentTest.class);
     }
 }
